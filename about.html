@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — WebUtility</title>
+    <meta name="description" content="WebUtility is a free collection of online calculators built for everyday financial decisions.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --red: #C8102E; --magenta: #D6006E;
+            --accent-grad: linear-gradient(135deg, #C8102E, #D6006E);
+            --black: #0D0D0D; --gray-dark: #2A2A2A; --gray-mid: #6B6B6B;
+            --gray-light: #E8E8E8; --gray-faint: #F5F5F5; --white: #FFFFFF;
+            --radius: 4px; --radius-lg: 12px;
+            --shadow: 0 2px 16px rgba(0,0,0,0.08);
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
+        nav { border-bottom: 1px solid var(--gray-light); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--white); z-index: 100; }
+        .logo { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--black); text-decoration: none; letter-spacing: -0.02em; }
+        .logo span { background: var(--accent-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--gray-mid); text-decoration: none; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--red); }
+        .hero-strip { background: var(--black); padding: 48px 24px 40px; text-align: center; }
+        .hero-strip .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--magenta); margin-bottom: 12px; }
+        .hero-strip h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--white); letter-spacing: -0.03em; line-height: 1.1; }
+        main { flex: 1; max-width: 560px; width: 100%; margin: 0 auto; padding: 48px 20px 80px; }
+        .prose h2 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; letter-spacing: -0.02em; color: var(--black); margin: 36px 0 12px; }
+        .prose h2:first-child { margin-top: 0; }
+        .prose p { font-size: 0.95rem; color: var(--gray-dark); line-height: 1.75; font-weight: 400; margin-bottom: 16px; }
+        .prose a { color: var(--red); text-decoration: none; }
+        .prose a:hover { text-decoration: underline; }
+        .divider { height: 1px; background: var(--gray-light); margin: 36px 0; }
+        .tool-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .chip { padding: 6px 14px; border: 1px solid var(--gray-light); border-radius: 99px; font-size: 0.8rem; font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: all 0.2s; }
+        .chip:hover { border-color: var(--red); color: var(--red); }
+        footer { border-top: 1px solid var(--gray-light); padding: 20px 24px; text-align: center; font-size: 0.8rem; color: var(--gray-mid); }
+        footer a { color: var(--gray-mid); text-decoration: none; margin: 0 8px; }
+        footer a:hover { color: var(--red); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .prose { animation: fadeUp 0.4s ease both; }
+        @media (max-width: 480px) { .nav-links { display: none; } }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/" class="logo">Web<span>Utility</span></a>
+    <ul class="nav-links">
+        <li><a href="/tip.html">Tip</a></li>
+        <li><a href="/pl.html">Profit & Loss</a></li>
+        <li><a href="/budget.html">Budget</a></li>
+        <li><a href="/mortgage.html">Mortgage</a></li>
+    </ul>
+</nav>
+<div class="hero-strip">
+    <p class="eyebrow">About</p>
+    <h1>WebUtility</h1>
+</div>
+<main>
+    <div class="prose">
+        <h2>What is WebUtility?</h2>
+        <p>WebUtility is a free collection of online calculators built for everyday financial decisions. No accounts, no subscriptions, no data collection — just fast, accurate tools that work on any device.</p>
+        <p>Every calculator runs entirely in your browser. Nothing you enter is ever sent to a server or stored anywhere.</p>
+
+        <div class="divider"></div>
+
+        <h2>Why we built it</h2>
+        <p>Most financial calculator sites are cluttered, slow, or require you to sign up just to do basic math. We built WebUtility because those calculations should be instant and free — always.</p>
+        <p>We keep the interface clean, the math accurate, and the tools focused on what actually matters.</p>
+
+        <div class="divider"></div>
+
+        <h2>Our calculators</h2>
+        <p>Currently available:</p>
+        <div class="tool-chips">
+            <a href="/tip.html" class="chip">Tip Calculator</a>
+            <a href="/pl.html" class="chip">Profit & Loss</a>
+            <a href="/budget.html" class="chip">Budget Calculator</a>
+            <a href="/mortgage.html" class="chip">Mortgage Calculator</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Contact</h2>
+        <p>Questions or feedback? Reach us at <a href="mailto:devbydev210226@gmail.com">devbydev210226@gmail.com</a> or visit our <a href="/contact.html">contact page</a>.</p>
+    </div>
+</main>
+<footer>
+    <span>© 2026 WebUtility</span>
+    <a href="/about.html">About</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/contact.html">Contact</a>
+</footer>
+</body>
+</html>

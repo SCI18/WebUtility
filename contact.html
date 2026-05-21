@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — WebUtility</title>
+    <meta name="description" content="Get in touch with WebUtility. Questions, feedback, or suggestions welcome.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --red: #C8102E; --magenta: #D6006E;
+            --accent-grad: linear-gradient(135deg, #C8102E, #D6006E);
+            --black: #0D0D0D; --gray-dark: #2A2A2A; --gray-mid: #6B6B6B;
+            --gray-light: #E8E8E8; --gray-faint: #F5F5F5; --white: #FFFFFF;
+            --radius: 4px; --radius-lg: 12px;
+            --shadow: 0 2px 16px rgba(0,0,0,0.08);
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
+        nav { border-bottom: 1px solid var(--gray-light); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--white); z-index: 100; }
+        .logo { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--black); text-decoration: none; letter-spacing: -0.02em; }
+        .logo span { background: var(--accent-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--gray-mid); text-decoration: none; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--red); }
+        .hero-strip { background: var(--black); padding: 48px 24px 40px; text-align: center; }
+        .hero-strip .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--magenta); margin-bottom: 12px; }
+        .hero-strip h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--white); letter-spacing: -0.03em; line-height: 1.1; }
+        .hero-strip p { margin-top: 12px; font-size: 0.95rem; color: #888; font-weight: 300; }
+        main { flex: 1; max-width: 560px; width: 100%; margin: 0 auto; padding: 48px 20px 80px; }
+        .card { background: var(--white); border: 1px solid var(--gray-light); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow); animation: fadeUp 0.4s ease both; }
+        .card h2 { font-family: 'DM Serif Display', serif; font-size: 1.35rem; color: var(--black); letter-spacing: -0.02em; margin-bottom: 10px; }
+        .card p { font-size: 0.9rem; color: var(--gray-mid); line-height: 1.65; margin-bottom: 28px; }
+        .contact-options { display: flex; flex-direction: column; gap: 12px; }
+        .contact-item { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid var(--gray-light); border-radius: var(--radius); text-decoration: none; color: var(--black); transition: all 0.2s; }
+        .contact-item:hover { border-color: var(--red); }
+        .contact-icon { width: 36px; height: 36px; border-radius: var(--radius); background: var(--gray-faint); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+        .contact-item:hover .contact-icon { background: #fff0f3; }
+        .contact-text .c-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-mid); margin-bottom: 2px; }
+        .contact-text .c-value { font-size: 0.9rem; font-weight: 500; color: var(--black); }
+        .contact-item:hover .c-value { color: var(--red); }
+        .divider { height: 1px; background: var(--gray-light); margin: 28px 0; }
+        .feedback-note { font-size: 0.85rem; color: var(--gray-mid); line-height: 1.6; }
+        footer { border-top: 1px solid var(--gray-light); padding: 20px 24px; text-align: center; font-size: 0.8rem; color: var(--gray-mid); }
+        footer a { color: var(--gray-mid); text-decoration: none; margin: 0 8px; }
+        footer a:hover { color: var(--red); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 480px) { .nav-links { display: none; } .card { padding: 24px; } }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/" class="logo">Web<span>Utility</span></a>
+    <ul class="nav-links">
+        <li><a href="/tip.html">Tip</a></li>
+        <li><a href="/pl.html">Profit & Loss</a></li>
+        <li><a href="/budget.html">Budget</a></li>
+        <li><a href="/mortgage.html">Mortgage</a></li>
+    </ul>
+</nav>
+<div class="hero-strip">
+    <p class="eyebrow">Get in touch</p>
+    <h1>Contact</h1>
+    <p>Questions, feedback, or suggestions — we're listening.</p>
+</div>
+<main>
+    <div class="card">
+        <h2>Reach us directly</h2>
+        <p>We're a small team. Drop us a message and we'll get back to you as soon as we can.</p>
+        <div class="contact-options">
+            <a href="mailto:devbydev210226@gmail.com" class="contact-item">
+                <div class="contact-icon">✉️</div>
+                <div class="contact-text">
+                    <div class="c-label">Email</div>
+                    <div class="c-value">devbydev210226@gmail.com</div>
+                </div>
+            </a>
+            <a href="https://github.com/SCI18/WebUtility/issues" target="_blank" rel="noopener" class="contact-item">
+                <div class="contact-icon">🐛</div>
+                <div class="contact-text">
+                    <div class="c-label">Bug reports & feature requests</div>
+                    <div class="c-value">GitHub Issues</div>
+                </div>
+            </a>
+        </div>
+        <div class="divider"></div>
+        <p class="feedback-note">Found a calculation error? Have an idea for a new tool? We read every message and take feedback seriously. WebUtility is built to be useful — your input helps us grow and improve our tools so you can have the best suite at your fingertips!.</p>
+    </div>
+</main>
+<footer>
+    <span>© 2026 WebUtility</span>
+    <a href="/about.html">About</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/contact.html">Contact</a>
+</footer>
+</body>
+</html>
