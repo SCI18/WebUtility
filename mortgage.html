@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Calculator — WebUtility</title>
+    <meta name="description" content="Free mortgage calculator. Calculate monthly payments, total interest, and full loan cost instantly.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red: #C8102E;
+            --magenta: #D6006E;
+            --accent-grad: linear-gradient(135deg, #C8102E, #D6006E);
+            --black: #0D0D0D;
+            --gray-dark: #2A2A2A;
+            --gray-mid: #6B6B6B;
+            --gray-light: #E8E8E8;
+            --gray-faint: #F5F5F5;
+            --white: #FFFFFF;
+            --green: #00A86B;
+            --radius: 4px;
+            --radius-lg: 12px;
+            --shadow: 0 2px 16px rgba(0,0,0,0.08);
+            --shadow-hover: 0 6px 32px rgba(200,16,46,0.18);
+        }
+
+        html { font-size: 16px; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            border-bottom: 1px solid var(--gray-light);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            color: var(--black);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-mid);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active { color: var(--red); }
+
+        .hero-strip {
+            background: var(--black);
+            padding: 48px 24px 40px;
+            text-align: center;
+        }
+
+        .hero-strip .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--magenta);
+            margin-bottom: 12px;
+        }
+
+        .hero-strip h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--white);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .hero-strip p {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            max-width: 560px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .card-section {
+            padding: 28px 28px 0;
+        }
+
+        .card-section.padded { padding-bottom: 28px; }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-bottom: 16px;
+        }
+
+        .field { margin-bottom: 20px; }
+
+        .field label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-dark);
+            margin-bottom: 8px;
+        }
+
+        .field .hint {
+            font-size: 0.75rem;
+            color: var(--gray-mid);
+            font-weight: 400;
+            margin-left: 6px;
+        }
+
+        .input-wrap { position: relative; }
+
+        .input-wrap .prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            pointer-events: none;
+        }
+
+        .input-wrap .suffix {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            height: 48px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--black);
+            background: var(--gray-faint);
+            padding: 0 36px 0 32px;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .input-wrap input.no-suffix { padding-right: 16px; }
+        .input-wrap input.no-prefix { padding-left: 16px; }
+
+        .input-wrap input:focus {
+            border-color: var(--red);
+            background: var(--white);
+        }
+
+        /* Term presets */
+        .term-presets {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .preset-btn {
+            height: 44px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            background: var(--gray-faint);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-dark);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .preset-btn:hover { border-color: var(--red); color: var(--red); }
+        .preset-btn.active {
+            background: var(--accent-grad);
+            border-color: transparent;
+            color: var(--white);
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gray-light);
+            margin: 4px 0;
+        }
+
+        /* Results */
+        .results {
+            background: var(--black);
+            padding: 28px;
+        }
+
+        .results .section-label { color: #666; }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .result-item .r-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .result-item .r-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1;
+            transition: all 0.2s ease;
+        }
+
+        .r-value.accent {
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Principal vs interest split */
+        .split-bar-wrap {
+            margin-bottom: 20px;
+        }
+
+        .split-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .split-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .split-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .split-dot.principal { background: var(--green); }
+        .split-dot.interest { background: var(--red); }
+
+        .split-bar-track {
+            height: 8px;
+            background: var(--red);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .split-bar-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 99px;
+            transition: width 0.4s ease;
+        }
+
+        .total-bar {
+            border-top: 1px solid #222;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .total-bar .t-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .total-bar .t-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.25rem;
+            color: var(--white);
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .reset-btn {
+            display: block;
+            width: 100%;
+            height: 48px;
+            margin-top: 24px;
+            background: var(--accent-grad);
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--white);
+            cursor: pointer;
+            transition: opacity 0.2s, box-shadow 0.2s;
+        }
+
+        .reset-btn:hover { opacity: 0.9; box-shadow: var(--shadow-hover); }
+
+        .tool-nav { margin-top: 24px; }
+
+        .tool-nav p {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-bottom: 8px;
+        }
+
+        .tool-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .tool-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--gray-dark);
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tool-link:hover { border-color: var(--red); color: var(--red); }
+        .tool-link .arrow { font-size: 0.75rem; color: var(--gray-light); }
+        .tool-link:hover .arrow { color: var(--red); }
+
+        footer {
+            border-top: 1px solid var(--gray-light);
+            padding: 20px 24px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray-mid);
+        }
+
+        footer a {
+            color: var(--gray-mid);
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        footer a:hover { color: var(--red); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-strip h1 { animation: fadeUp 0.35s ease both; }
+        .hero-strip p { animation: fadeUp 0.4s 0.05s ease both; }
+
+        @media (max-width: 480px) {
+            .nav-links { display: none; }
+            .card-section { padding: 20px 20px 0; }
+            .results { padding: 20px; }
+            .two-col { grid-template-columns: 1fr; gap: 0; }
+            .term-presets { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Web<span>Utility</span></a>
+    <ul class="nav-links">
+        <li><a href="/index.html">Tip</a></li>
+        <li><a href="/pl.html">Profit & Loss</a></li>
+        <li><a href="/budget.html">Budget</a></li>
+        <li><a href="/mortgage.html" class="active">Mortgage</a></li>
+    </ul>
+</nav>
+
+<div class="hero-strip">
+    <p class="eyebrow">Free Calculator</p>
+    <h1>Mortgage Calculator</h1>
+    <p>Know your true cost before you sign.</p>
+</div>
+
+<main>
+    <div class="card">
+
+        <div class="card-section">
+            <p class="section-label">Loan Details</p>
+
+            <div class="two-col">
+                <div class="field">
+                    <label for="price">Home Price</label>
+                    <div class="input-wrap">
+                        <span class="prefix">$</span>
+                        <input type="number" id="price" class="no-suffix" placeholder="0" min="0" step="1000">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="down">Down Payment</label>
+                    <div class="input-wrap">
+                        <span class="prefix">$</span>
+                        <input type="number" id="down" class="no-suffix" placeholder="0" min="0" step="1000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="rate">Annual Interest Rate</label>
+                <div class="input-wrap">
+                    <input type="number" id="rate" class="no-prefix" placeholder="6.5" min="0" max="30" step="0.1" style="padding-left:16px; padding-right:36px;">
+                    <span class="suffix">%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-section padded">
+            <p class="section-label">Loan Term</p>
+            <div class="term-presets">
+                <button class="preset-btn" data-term="10">10 yr</button>
+                <button class="preset-btn" data-term="15">15 yr</button>
+                <button class="preset-btn" data-term="20">20 yr</button>
+                <button class="preset-btn active" data-term="30">30 yr</button>
+            </div>
+            <div class="field" style="margin-bottom:0">
+                <label for="term">Custom Term <span style="font-size:0.75rem;color:var(--gray-mid);font-weight:400;">years</span></label>
+                <div class="input-wrap">
+                    <input type="number" id="term" class="no-prefix no-suffix" placeholder="30" min="1" max="50" step="1" value="30" style="padding-left:16px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="results">
+            <p class="section-label">Results</p>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="r-label">Loan Amount</span>
+                    <span class="r-value accent" id="loanAmount">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Down Payment</span>
+                    <span class="r-value" id="downPct">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Total Interest</span>
+                    <span class="r-value" id="totalInterest">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Total Cost</span>
+                    <span class="r-value" id="totalCost">$0</span>
+                </div>
+            </div>
+
+            <div class="split-bar-wrap">
+                <div class="split-bar-labels">
+                    <span class="split-label"><span class="split-dot principal"></span>Principal</span>
+                    <span class="split-label"><span class="split-dot interest"></span>Interest</span>
+                </div>
+                <div class="split-bar-track">
+                    <div class="split-bar-fill" id="splitFill" style="width:50%"></div>
+                </div>
+            </div>
+
+            <div class="total-bar">
+                <div class="t-label">Monthly Payment</div>
+                <span class="t-value" id="monthlyPayment">$0.00</span>
+            </div>
+
+            <button class="reset-btn" id="resetBtn">Reset</button>
+        </div>
+
+    </div>
+
+    <nav class="tool-nav">
+        <p>Other Calculators</p>
+        <div class="tool-links">
+            <a href="/index.html" class="tool-link">Tip <span class="arrow">→</span></a>
+            <a href="/pl.html" class="tool-link">Profit & Loss <span class="arrow">→</span></a>
+            <a href="/budget.html" class="tool-link">Budget <span class="arrow">→</span></a>
+            <a href="/" class="tool-link">All Tools <span class="arrow">→</span></a>
+        </div>
+    </nav>
+</main>
+
+<footer>
+    <span>© 2026 WebUtility</span>
+    <a href="/about.html">About</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/contact.html">Contact</a>
+</footer>
+
+<script>
+    const priceInput = document.getElementById('price');
+    const downInput = document.getElementById('down');
+    const rateInput = document.getElementById('rate');
+    const termInput = document.getElementById('term');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    const loanAmountEl = document.getElementById('loanAmount');
+    const downPctEl = document.getElementById('downPct');
+    const totalInterestEl = document.getElementById('totalInterest');
+    const totalCostEl = document.getElementById('totalCost');
+    const monthlyPaymentEl = document.getElementById('monthlyPayment');
+    const splitFill = document.getElementById('splitFill');
+
+    function fmt(val) {
+        return '$' + Math.round(val).toLocaleString();
+    }
+
+    function fmtDec(val) {
+        return '$' + val.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function calculate() {
+        const price = parseFloat(priceInput.value) || 0;
+        const down = parseFloat(downInput.value) || 0;
+        const annualRate = parseFloat(rateInput.value) || 0;
+        const years = parseInt(termInput.value) || 30;
+
+        const principal = Math.max(0, price - down);
+        const monthlyRate = annualRate / 100 / 12;
+        const numPayments = years * 12;
+
+        let monthly = 0;
+        if (monthlyRate === 0) {
+            monthly = principal / numPayments;
+        } else {
+            monthly = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                      (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        const totalCost = monthly * numPayments;
+        const totalInterest = totalCost - principal;
+        const downPct = price > 0 ? ((down / price) * 100).toFixed(1) : 0;
+        const principalPct = totalCost > 0 ? (principal / totalCost) * 100 : 50;
+
+        loanAmountEl.textContent = fmt(principal);
+        downPctEl.textContent = downPct + '%';
+        totalInterestEl.textContent = fmt(totalInterest);
+        totalCostEl.textContent = fmt(totalCost);
+        monthlyPaymentEl.textContent = isFinite(monthly) ? fmtDec(monthly) : '$0.00';
+        splitFill.style.width = (isFinite(principalPct) ? principalPct : 50) + '%';
+    }
+
+    presetBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            presetBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            termInput.value = btn.dataset.term;
+            calculate();
+        });
+    });
+
+    termInput.addEventListener('input', () => {
+        const val = termInput.value;
+        presetBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.term === val);
+        });
+        calculate();
+    });
+
+    priceInput.addEventListener('input', calculate);
+    downInput.addEventListener('input', calculate);
+    rateInput.addEventListener('input', calculate);
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        priceInput.value = '';
+        downInput.value = '';
+        rateInput.value = '';
+        termInput.value = '30';
+        presetBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-term="30"]').classList.add('active');
+        calculate();
+    });
+
+    calculate();
+</script>
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit & Loss Calculator — WebUtility</title>
+    <meta name="description" content="Free profit and loss calculator. Instantly calculate gross profit, net profit, and margin percentages.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red: #C8102E;
+            --magenta: #D6006E;
+            --accent-grad: linear-gradient(135deg, #C8102E, #D6006E);
+            --black: #0D0D0D;
+            --gray-dark: #2A2A2A;
+            --gray-mid: #6B6B6B;
+            --gray-light: #E8E8E8;
+            --gray-faint: #F5F5F5;
+            --white: #FFFFFF;
+            --green: #00A86B;
+            --radius: 4px;
+            --radius-lg: 12px;
+            --shadow: 0 2px 16px rgba(0,0,0,0.08);
+            --shadow-hover: 0 6px 32px rgba(200,16,46,0.18);
+        }
+
+        html { font-size: 16px; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            border-bottom: 1px solid var(--gray-light);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            color: var(--black);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-mid);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active { color: var(--red); }
+
+        .hero-strip {
+            background: var(--black);
+            padding: 48px 24px 40px;
+            text-align: center;
+        }
+
+        .hero-strip .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--magenta);
+            margin-bottom: 12px;
+        }
+
+        .hero-strip h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--white);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .hero-strip p {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            max-width: 560px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .card-section {
+            padding: 28px 28px 0;
+        }
+
+        .card-section:last-of-type {
+            padding-bottom: 28px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-bottom: 16px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-dark);
+            margin-bottom: 8px;
+        }
+
+        .field .hint {
+            font-size: 0.75rem;
+            color: var(--gray-mid);
+            font-weight: 400;
+            margin-left: 6px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            height: 48px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--black);
+            background: var(--gray-faint);
+            padding: 0 16px 0 32px;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--red);
+            background: var(--white);
+        }
+
+        /* Expense rows */
+        .expense-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .expense-row {
+            display: grid;
+            grid-template-columns: 1fr 140px 36px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .expense-row input {
+            width: 100%;
+            height: 42px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--black);
+            background: var(--gray-faint);
+            padding: 0 12px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .expense-row input:focus {
+            border-color: var(--red);
+            background: var(--white);
+        }
+
+        .expense-row input.amount {
+            padding-left: 28px;
+        }
+
+        .expense-amount-wrap {
+            position: relative;
+        }
+
+        .expense-amount-wrap .prefix {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            pointer-events: none;
+        }
+
+        .remove-btn {
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            background: var(--gray-faint);
+            color: var(--gray-mid);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .remove-btn:hover {
+            border-color: var(--red);
+            color: var(--red);
+            background: #fff0f3;
+        }
+
+        .add-expense-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: 1.5px dashed var(--gray-light);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+
+        .add-expense-btn:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gray-light);
+            margin: 4px 0;
+        }
+
+        /* Results */
+        .results {
+            background: var(--black);
+            padding: 28px;
+        }
+
+        .results .section-label { color: #666; }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .result-item .r-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .result-item .r-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1;
+            transition: all 0.2s ease;
+        }
+
+        .result-item .r-value.accent {
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-item .r-value.positive { color: var(--green); }
+        .result-item .r-value.negative { color: var(--red); }
+
+        /* Status indicator */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            background: #111;
+            border: 1px solid #222;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: #444;
+            transition: background 0.3s;
+        }
+
+        .status-dot.profit { background: var(--green); }
+        .status-dot.loss { background: var(--red); }
+
+        .status-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .status-text.profit { color: var(--green); }
+        .status-text.loss { color: var(--red); }
+
+        .total-bar {
+            border-top: 1px solid #222;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .total-bar .t-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .total-bar .t-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.25rem;
+            color: var(--white);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .total-bar .t-value.positive { color: var(--green); }
+        .total-bar .t-value.negative { color: var(--red); }
+
+        .reset-btn {
+            display: block;
+            width: 100%;
+            height: 48px;
+            margin-top: 24px;
+            background: var(--accent-grad);
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--white);
+            cursor: pointer;
+            transition: opacity 0.2s, box-shadow 0.2s;
+        }
+
+        .reset-btn:hover {
+            opacity: 0.9;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .tool-nav { margin-top: 24px; }
+
+        .tool-nav p {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-bottom: 8px;
+        }
+
+        .tool-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .tool-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--gray-dark);
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tool-link:hover { border-color: var(--red); color: var(--red); }
+        .tool-link .arrow { font-size: 0.75rem; color: var(--gray-light); }
+        .tool-link:hover .arrow { color: var(--red); }
+
+        footer {
+            border-top: 1px solid var(--gray-light);
+            padding: 20px 24px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray-mid);
+        }
+
+        footer a {
+            color: var(--gray-mid);
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        footer a:hover { color: var(--red); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-strip h1 { animation: fadeUp 0.35s ease both; }
+        .hero-strip p { animation: fadeUp 0.4s 0.05s ease both; }
+
+        @media (max-width: 480px) {
+            .nav-links { display: none; }
+            .card-section { padding: 20px 20px 0; }
+            .results { padding: 20px; }
+            .expense-row { grid-template-columns: 1fr 110px 36px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Web<span>Utility</span></a>
+    <ul class="nav-links">
+        <li><a href="/index.html">Tip</a></li>
+        <li><a href="/pl.html" class="active">Profit & Loss</a></li>
+        <li><a href="/budget.html">Budget</a></li>
+        <li><a href="/mortgage.html">Mortgage</a></li>
+    </ul>
+</nav>
+
+<div class="hero-strip">
+    <p class="eyebrow">Free Calculator</p>
+    <h1>Profit & Loss</h1>
+    <p>Know your margins instantly. No signup, no ads.</p>
+</div>
+
+<main>
+    <div class="card">
+
+        <div class="card-section">
+            <p class="section-label">Revenue</p>
+            <div class="field">
+                <label for="revenue">Total Revenue</label>
+                <div class="input-wrap">
+                    <span class="prefix">$</span>
+                    <input type="number" id="revenue" placeholder="0.00" min="0" step="0.01">
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-section">
+            <p class="section-label">Cost of Goods Sold</p>
+            <div class="field">
+                <label for="cogs">COGS <span class="hint">— direct costs to produce your product/service</span></label>
+                <div class="input-wrap">
+                    <span class="prefix">$</span>
+                    <input type="number" id="cogs" placeholder="0.00" min="0" step="0.01">
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-section" style="padding-bottom: 28px;">
+            <p class="section-label">Operating Expenses</p>
+            <div class="expense-rows" id="expenseRows">
+                <div class="expense-row">
+                    <input type="text" placeholder="Expense name" class="name">
+                    <div class="expense-amount-wrap">
+                        <span class="prefix">$</span>
+                        <input type="number" placeholder="0.00" class="amount" min="0" step="0.01">
+                    </div>
+                    <button class="remove-btn" title="Remove">×</button>
+                </div>
+            </div>
+            <button class="add-expense-btn" id="addExpense">+ Add Expense</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="results">
+            <p class="section-label">Results</p>
+
+            <div class="status-bar">
+                <div class="status-dot" id="statusDot"></div>
+                <span class="status-text" id="statusText">Enter your figures above</span>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="r-label">Gross Profit</span>
+                    <span class="r-value accent" id="grossProfit">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Gross Margin</span>
+                    <span class="r-value" id="grossMargin">0.00%</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Total Expenses</span>
+                    <span class="r-value" id="totalExpenses">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Cost Ratio</span>
+                    <span class="r-value" id="costRatio">0.00%</span>
+                </div>
+            </div>
+
+            <div class="total-bar">
+                <div>
+                    <div class="t-label">Net Profit</div>
+                </div>
+                <span class="t-value" id="netProfit">$0.00</span>
+            </div>
+
+            <button class="reset-btn" id="resetBtn">Reset</button>
+        </div>
+
+    </div>
+
+    <nav class="tool-nav">
+        <p>Other Calculators</p>
+        <div class="tool-links">
+            <a href="/index.html" class="tool-link">Tip <span class="arrow">→</span></a>
+            <a href="/budget.html" class="tool-link">Budget <span class="arrow">→</span></a>
+            <a href="/mortgage.html" class="tool-link">Mortgage <span class="arrow">→</span></a>
+            <a href="/" class="tool-link">All Tools <span class="arrow">→</span></a>
+        </div>
+    </nav>
+</main>
+
+<footer>
+    <span>© 2026 WebUtility</span>
+    <a href="/about.html">About</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/contact.html">Contact</a>
+</footer>
+
+<script>
+    const revenueInput = document.getElementById('revenue');
+    const cogsInput = document.getElementById('cogs');
+    const expenseRows = document.getElementById('expenseRows');
+
+    const grossProfitEl = document.getElementById('grossProfit');
+    const grossMarginEl = document.getElementById('grossMargin');
+    const totalExpensesEl = document.getElementById('totalExpenses');
+    const costRatioEl = document.getElementById('costRatio');
+    const netProfitEl = document.getElementById('netProfit');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+
+    function fmt(val) {
+        const abs = Math.abs(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return (val < 0 ? '-$' : '$') + abs;
+    }
+
+    function fmtPct(val) {
+        return (isFinite(val) ? val.toFixed(2) : '0.00') + '%';
+    }
+
+    function getExpenseTotal() {
+        let total = 0;
+        expenseRows.querySelectorAll('.expense-row').forEach(row => {
+            const amt = parseFloat(row.querySelector('.amount').value) || 0;
+            total += amt;
+        });
+        return total;
+    }
+
+    function calculate() {
+        const revenue = parseFloat(revenueInput.value) || 0;
+        const cogs = parseFloat(cogsInput.value) || 0;
+        const expenses = getExpenseTotal();
+
+        const grossProfit = revenue - cogs;
+        const grossMargin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+        const netProfit = grossProfit - expenses;
+        const totalCosts = cogs + expenses;
+        const costRatio = revenue > 0 ? (totalCosts / revenue) * 100 : 0;
+
+        grossProfitEl.textContent = fmt(grossProfit);
+        grossMarginEl.textContent = fmtPct(grossMargin);
+        totalExpensesEl.textContent = fmt(expenses);
+        costRatioEl.textContent = fmtPct(costRatio);
+        netProfitEl.textContent = fmt(netProfit);
+
+        // Color coding
+        netProfitEl.className = 't-value' + (netProfit > 0 ? ' positive' : netProfit < 0 ? ' negative' : '');
+        grossProfitEl.className = 'r-value' + (grossProfit > 0 ? ' accent' : grossProfit < 0 ? ' negative' : ' accent');
+
+        // Status
+        if (revenue === 0) {
+            statusDot.className = 'status-dot';
+            statusText.className = 'status-text';
+            statusText.textContent = 'Enter your figures above';
+        } else if (netProfit > 0) {
+            statusDot.className = 'status-dot profit';
+            statusText.className = 'status-text profit';
+            statusText.textContent = `Profitable — ${fmtPct((netProfit / revenue) * 100)} net margin`;
+        } else if (netProfit < 0) {
+            statusDot.className = 'status-dot loss';
+            statusText.className = 'status-text loss';
+            statusText.textContent = `Operating at a loss of ${fmt(Math.abs(netProfit))}`;
+        } else {
+            statusDot.className = 'status-dot';
+            statusText.className = 'status-text';
+            statusText.textContent = 'Breaking even';
+        }
+    }
+
+    function addExpenseRow(name = '', amount = '') {
+        const row = document.createElement('div');
+        row.className = 'expense-row';
+        row.innerHTML = `
+            <input type="text" placeholder="Expense name" class="name" value="${name}">
+            <div class="expense-amount-wrap">
+                <span class="prefix">$</span>
+                <input type="number" placeholder="0.00" class="amount" min="0" step="0.01" value="${amount}">
+            </div>
+            <button class="remove-btn" title="Remove">×</button>
+        `;
+        row.querySelector('.remove-btn').addEventListener('click', () => {
+            if (expenseRows.querySelectorAll('.expense-row').length > 1) {
+                row.remove();
+                calculate();
+            }
+        });
+        row.querySelector('.amount').addEventListener('input', calculate);
+        expenseRows.appendChild(row);
+    }
+
+    // Wire up initial row
+    expenseRows.querySelector('.remove-btn').addEventListener('click', () => {
+        if (expenseRows.querySelectorAll('.expense-row').length > 1) {
+            expenseRows.querySelector('.expense-row').remove();
+            calculate();
+        }
+    });
+    expenseRows.querySelector('.amount').addEventListener('input', calculate);
+
+    document.getElementById('addExpense').addEventListener('click', () => {
+        addExpenseRow();
+    });
+
+    revenueInput.addEventListener('input', calculate);
+    cogsInput.addEventListener('input', calculate);
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        revenueInput.value = '';
+        cogsInput.value = '';
+        expenseRows.innerHTML = '';
+        addExpenseRow();
+        calculate();
+    });
+
+    calculate();
+</script>
+</body>
+</html>

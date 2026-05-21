@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Calculator — WebUtility</title>
+    <meta name="description" content="Free budget calculator. Track income and expenses, see your remaining balance and breakdown instantly.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red: #C8102E;
+            --magenta: #D6006E;
+            --accent-grad: linear-gradient(135deg, #C8102E, #D6006E);
+            --black: #0D0D0D;
+            --gray-dark: #2A2A2A;
+            --gray-mid: #6B6B6B;
+            --gray-light: #E8E8E8;
+            --gray-faint: #F5F5F5;
+            --white: #FFFFFF;
+            --green: #00A86B;
+            --radius: 4px;
+            --radius-lg: 12px;
+            --shadow: 0 2px 16px rgba(0,0,0,0.08);
+            --shadow-hover: 0 6px 32px rgba(200,16,46,0.18);
+        }
+
+        html { font-size: 16px; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            border-bottom: 1px solid var(--gray-light);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            color: var(--black);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-mid);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active { color: var(--red); }
+
+        .hero-strip {
+            background: var(--black);
+            padding: 48px 24px 40px;
+            text-align: center;
+        }
+
+        .hero-strip .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--magenta);
+            margin-bottom: 12px;
+        }
+
+        .hero-strip h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--white);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .hero-strip p {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            max-width: 560px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .card-section {
+            padding: 28px 28px 0;
+        }
+
+        .card-section.padded {
+            padding-bottom: 28px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-bottom: 16px;
+        }
+
+        .field { margin-bottom: 20px; }
+
+        .field label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-dark);
+            margin-bottom: 8px;
+        }
+
+        .input-wrap { position: relative; }
+
+        .input-wrap .prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            height: 48px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--black);
+            background: var(--gray-faint);
+            padding: 0 16px 0 32px;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--red);
+            background: var(--white);
+        }
+
+        /* Category rows */
+        .category-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .category-row {
+            display: grid;
+            grid-template-columns: 1fr 140px 36px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .category-row input {
+            width: 100%;
+            height: 42px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--black);
+            background: var(--gray-faint);
+            padding: 0 12px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .category-row input:focus {
+            border-color: var(--red);
+            background: var(--white);
+        }
+
+        .category-row input.amount { padding-left: 28px; }
+
+        .amount-wrap { position: relative; }
+
+        .amount-wrap .prefix {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            pointer-events: none;
+        }
+
+        .remove-btn {
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: var(--radius);
+            background: var(--gray-faint);
+            color: var(--gray-mid);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .remove-btn:hover {
+            border-color: var(--red);
+            color: var(--red);
+            background: #fff0f3;
+        }
+
+        .add-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: 1.5px dashed var(--gray-light);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-mid);
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+
+        .add-btn:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gray-light);
+            margin: 4px 0;
+        }
+
+        /* Results */
+        .results {
+            background: var(--black);
+            padding: 28px;
+        }
+
+        .results .section-label { color: #666; }
+
+        /* Progress bar */
+        .budget-bar-wrap {
+            margin-bottom: 20px;
+        }
+
+        .budget-bar-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .budget-bar-label span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .budget-bar-label .pct {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1rem;
+            color: var(--white);
+        }
+
+        .budget-bar-track {
+            height: 6px;
+            background: #222;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .budget-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: var(--accent-grad);
+            width: 0%;
+            transition: width 0.4s ease, background 0.3s;
+        }
+
+        .budget-bar-fill.over { background: var(--red); }
+        .budget-bar-fill.safe { background: var(--green); }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .result-item .r-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .result-item .r-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .r-value.accent {
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .r-value.positive { color: var(--green) !important; -webkit-text-fill-color: var(--green); }
+        .r-value.negative { color: var(--red) !important; -webkit-text-fill-color: var(--red); }
+
+        /* Category breakdown */
+        .breakdown {
+            margin-bottom: 20px;
+        }
+
+        .breakdown-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breakdown-item .b-name {
+            font-size: 0.8rem;
+            color: #888;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .breakdown-item .b-bar {
+            flex: 2;
+            height: 4px;
+            background: #222;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .breakdown-item .b-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: var(--accent-grad);
+            transition: width 0.4s ease;
+        }
+
+        .breakdown-item .b-pct {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #666;
+            min-width: 36px;
+            text-align: right;
+        }
+
+        .total-bar {
+            border-top: 1px solid #222;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .total-bar .t-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .total-bar .t-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.25rem;
+            color: var(--white);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .t-value.positive { color: var(--green); }
+        .t-value.negative { color: var(--red); }
+
+        .reset-btn {
+            display: block;
+            width: 100%;
+            height: 48px;
+            margin-top: 24px;
+            background: var(--accent-grad);
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--white);
+            cursor: pointer;
+            transition: opacity 0.2s, box-shadow 0.2s;
+        }
+
+        .reset-btn:hover { opacity: 0.9; box-shadow: var(--shadow-hover); }
+
+        .tool-nav { margin-top: 24px; }
+
+        .tool-nav p {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-bottom: 8px;
+        }
+
+        .tool-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .tool-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--gray-dark);
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tool-link:hover { border-color: var(--red); color: var(--red); }
+        .tool-link .arrow { font-size: 0.75rem; color: var(--gray-light); }
+        .tool-link:hover .arrow { color: var(--red); }
+
+        footer {
+            border-top: 1px solid var(--gray-light);
+            padding: 20px 24px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray-mid);
+        }
+
+        footer a {
+            color: var(--gray-mid);
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        footer a:hover { color: var(--red); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-strip h1 { animation: fadeUp 0.35s ease both; }
+        .hero-strip p { animation: fadeUp 0.4s 0.05s ease both; }
+
+        @media (max-width: 480px) {
+            .nav-links { display: none; }
+            .card-section { padding: 20px 20px 0; }
+            .results { padding: 20px; }
+            .category-row { grid-template-columns: 1fr 110px 36px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Web<span>Utility</span></a>
+    <ul class="nav-links">
+        <li><a href="/index.html">Tip</a></li>
+        <li><a href="/pl.html">Profit & Loss</a></li>
+        <li><a href="/budget.html" class="active">Budget</a></li>
+        <li><a href="/mortgage.html">Mortgage</a></li>
+    </ul>
+</nav>
+
+<div class="hero-strip">
+    <p class="eyebrow">Free Calculator</p>
+    <h1>Budget Calculator</h1>
+    <p>Track every dollar. Know what's left.</p>
+</div>
+
+<main>
+    <div class="card">
+
+        <div class="card-section">
+            <p class="section-label">Monthly Income</p>
+            <div class="field">
+                <label for="income">Total Monthly Income</label>
+                <div class="input-wrap">
+                    <span class="prefix">$</span>
+                    <input type="number" id="income" placeholder="0.00" min="0" step="0.01">
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-section padded">
+            <p class="section-label">Expense Categories</p>
+            <div class="category-rows" id="categoryRows">
+                <div class="category-row">
+                    <input type="text" placeholder="e.g. Rent" class="name" value="Rent">
+                    <div class="amount-wrap">
+                        <span class="prefix">$</span>
+                        <input type="number" placeholder="0.00" class="amount" min="0" step="0.01">
+                    </div>
+                    <button class="remove-btn">×</button>
+                </div>
+                <div class="category-row">
+                    <input type="text" placeholder="e.g. Food" class="name" value="Food">
+                    <div class="amount-wrap">
+                        <span class="prefix">$</span>
+                        <input type="number" placeholder="0.00" class="amount" min="0" step="0.01">
+                    </div>
+                    <button class="remove-btn">×</button>
+                </div>
+                <div class="category-row">
+                    <input type="text" placeholder="e.g. Transport" class="name" value="Transport">
+                    <div class="amount-wrap">
+                        <span class="prefix">$</span>
+                        <input type="number" placeholder="0.00" class="amount" min="0" step="0.01">
+                    </div>
+                    <button class="remove-btn">×</button>
+                </div>
+            </div>
+            <button class="add-btn" id="addCategory">+ Add Category</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="results">
+            <p class="section-label">Results</p>
+
+            <div class="budget-bar-wrap">
+                <div class="budget-bar-label">
+                    <span>Spent</span>
+                    <span class="pct" id="spentPct">0%</span>
+                </div>
+                <div class="budget-bar-track">
+                    <div class="budget-bar-fill" id="budgetBarFill"></div>
+                </div>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="r-label">Total Income</span>
+                    <span class="r-value accent" id="totalIncome">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Total Spent</span>
+                    <span class="r-value" id="totalSpent">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Savings Rate</span>
+                    <span class="r-value" id="savingsRate">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="r-label">Categories</span>
+                    <span class="r-value" id="categoryCount">0</span>
+                </div>
+            </div>
+
+            <div class="breakdown" id="breakdownWrap">
+                <div class="breakdown-label">Breakdown by Category</div>
+                <div class="breakdown-list" id="breakdownList"></div>
+            </div>
+
+            <div class="total-bar">
+                <div class="t-label">Remaining</div>
+                <span class="t-value" id="remaining">$0.00</span>
+            </div>
+
+            <button class="reset-btn" id="resetBtn">Reset</button>
+        </div>
+
+    </div>
+
+    <nav class="tool-nav">
+        <p>Other Calculators</p>
+        <div class="tool-links">
+            <a href="/index.html" class="tool-link">Tip <span class="arrow">→</span></a>
+            <a href="/pl.html" class="tool-link">Profit & Loss <span class="arrow">→</span></a>
+            <a href="/mortgage.html" class="tool-link">Mortgage <span class="arrow">→</span></a>
+            <a href="/" class="tool-link">All Tools <span class="arrow">→</span></a>
+        </div>
+    </nav>
+</main>
+
+<footer>
+    <span>© 2026 WebUtility</span>
+    <a href="/about.html">About</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/contact.html">Contact</a>
+</footer>
+
+<script>
+    const incomeInput = document.getElementById('income');
+    const categoryRows = document.getElementById('categoryRows');
+
+    const totalIncomeEl = document.getElementById('totalIncome');
+    const totalSpentEl = document.getElementById('totalSpent');
+    const savingsRateEl = document.getElementById('savingsRate');
+    const categoryCountEl = document.getElementById('categoryCount');
+    const remainingEl = document.getElementById('remaining');
+    const budgetBarFill = document.getElementById('budgetBarFill');
+    const spentPctEl = document.getElementById('spentPct');
+    const breakdownList = document.getElementById('breakdownList');
+
+    function fmt(val) {
+        const abs = Math.abs(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return (val < 0 ? '-$' : '$') + abs;
+    }
+
+    function calculate() {
+        const income = parseFloat(incomeInput.value) || 0;
+        const rows = categoryRows.querySelectorAll('.category-row');
+
+        let totalSpent = 0;
+        const categories = [];
+
+        rows.forEach(row => {
+            const name = row.querySelector('.name').value || 'Unnamed';
+            const amt = parseFloat(row.querySelector('.amount').value) || 0;
+            totalSpent += amt;
+            if (amt > 0) categories.push({ name, amt });
+        });
+
+        const remaining = income - totalSpent;
+        const spentPct = income > 0 ? Math.min((totalSpent / income) * 100, 100) : 0;
+        const savingsRate = income > 0 ? ((remaining / income) * 100) : 0;
+
+        totalIncomeEl.textContent = fmt(income);
+        totalSpentEl.textContent = fmt(totalSpent);
+        remainingEl.textContent = fmt(remaining);
+        savingsRateEl.textContent = (income > 0 ? savingsRate.toFixed(1) : '0') + '%';
+        categoryCountEl.textContent = rows.length;
+        spentPctEl.textContent = spentPct.toFixed(0) + '%';
+
+        // Bar
+        budgetBarFill.style.width = spentPct + '%';
+        budgetBarFill.className = 'budget-bar-fill' + (spentPct >= 100 ? ' over' : spentPct < 80 ? ' safe' : '');
+
+        // Colors
+        remainingEl.className = 't-value' + (remaining > 0 ? ' positive' : remaining < 0 ? ' negative' : '');
+        savingsRateEl.className = 'r-value' + (savingsRate > 0 ? ' positive' : savingsRate < 0 ? ' negative' : '');
+
+        // Breakdown
+        breakdownList.innerHTML = '';
+        if (totalSpent > 0) {
+            categories.forEach(cat => {
+                const pct = ((cat.amt / totalSpent) * 100).toFixed(1);
+                const item = document.createElement('div');
+                item.className = 'breakdown-item';
+                item.innerHTML = `
+                    <span class="b-name">${cat.name}</span>
+                    <div class="b-bar"><div class="b-fill" style="width:${pct}%"></div></div>
+                    <span class="b-pct">${pct}%</span>
+                `;
+                breakdownList.appendChild(item);
+            });
+        }
+    }
+
+    function addRow(name = '', amount = '') {
+        const row = document.createElement('div');
+        row.className = 'category-row';
+        row.innerHTML = `
+            <input type="text" placeholder="Category name" class="name" value="${name}">
+            <div class="amount-wrap">
+                <span class="prefix">$</span>
+                <input type="number" placeholder="0.00" class="amount" min="0" step="0.01" value="${amount}">
+            </div>
+            <button class="remove-btn">×</button>
+        `;
+        wireRow(row);
+        categoryRows.appendChild(row);
+    }
+
+    function wireRow(row) {
+        row.querySelector('.remove-btn').addEventListener('click', () => {
+            if (categoryRows.querySelectorAll('.category-row').length > 1) {
+                row.remove();
+                calculate();
+            }
+        });
+        row.querySelector('.amount').addEventListener('input', calculate);
+        row.querySelector('.name').addEventListener('input', calculate);
+    }
+
+    // Wire initial rows
+    categoryRows.querySelectorAll('.category-row').forEach(wireRow);
+
+    document.getElementById('addCategory').addEventListener('click', () => {
+        addRow();
+        calculate();
+    });
+
+    incomeInput.addEventListener('input', calculate);
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        incomeInput.value = '';
+        categoryRows.innerHTML = '';
+        addRow('Rent');
+        addRow('Food');
+        addRow('Transport');
+        calculate();
+    });
+
+    calculate();
+</script>
+</body>
+</html>
