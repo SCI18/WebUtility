@@ -1,0 +1,46 @@
+{
+    "name": "WebUtility",
+    "short_name": "WebUtility",
+    "description": "Free online calculators for tips, profit & loss, budgeting, and mortgages.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0D0D0D",
+    "theme_color": "#C8102E",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/assets/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Tip Calculator",
+            "url": "/tip.html",
+            "description": "Calculate tips and split bills"
+        },
+        {
+            "name": "Profit & Loss",
+            "url": "/pl.html",
+            "description": "Calculate profit margins"
+        },
+        {
+            "name": "Budget Calculator",
+            "url": "/budget.html",
+            "description": "Track income and expenses"
+        },
+        {
+            "name": "Mortgage Calculator",
+            "url": "/mortgage.html",
+            "description": "Calculate mortgage payments"
+        }
+    ]
+}

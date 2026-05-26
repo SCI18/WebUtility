@@ -7,6 +7,9 @@
     <meta name="description" content="Free budget calculator. Track income and expenses, see your remaining balance and breakdown instantly.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#C8102E">
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -806,6 +809,16 @@
     });
 
     calculate();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+            .the(r => console.log("SW Registered"))
+            .catch(e => console.log("SW Error", e));
+    });
+}
 </script>
 </body>
 </html>

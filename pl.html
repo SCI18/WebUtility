@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#C8102E">
+    <link rel="apple-icon-touch" href="/assets/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profit & Loss Calculator — WebUtility</title>
@@ -747,6 +750,16 @@
     });
 
     calculate();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+            .then(r => console.log("SW Registered"))
+            .catch(e => console.log("SW Error", e));
+    });
+}
 </script>
 </body>
 </html>
