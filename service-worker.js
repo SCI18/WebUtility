@@ -1,4 +1,4 @@
-const CACHE_NAME = 'webutility-v1';
+const CACHE_NAME = 'webutility-v1.2';
 
 const STATIC_ASSETS = [
     '/',
