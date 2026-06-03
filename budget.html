@@ -683,7 +683,7 @@
     <nav class="tool-nav">
         <p>Other Calculators</p>
         <div class="tool-links">
-            <a href="/index.html" class="tool-link">Tip <span class="arrow">→</span></a>
+            <a href="/tip.html" class="tool-link">Tip <span class="arrow">→</span></a>
             <a href="/pl.html" class="tool-link">Profit & Loss <span class="arrow">→</span></a>
             <a href="/mortgage.html" class="tool-link">Mortgage <span class="arrow">→</span></a>
             <a href="/" class="tool-link">All Tools <span class="arrow">→</span></a>
@@ -756,11 +756,24 @@
                 const pct = ((cat.amt / totalSpent) * 100).toFixed(1);
                 const item = document.createElement('div');
                 item.className = 'breakdown-item';
-                item.innerHTML = `
-                    <span class="b-name">${cat.name}</span>
-                    <div class="b-bar"><div class="b-fill" style="width:${pct}%"></div></div>
-                    <span class="b-pct">${pct}%</span>
-                `;
+
+                const nameEl = document.createElement('span');
+                nameEl.className = 'b-name';
+                nameEl.textContent = cat.name;
+
+                const barEl = document.createElement('div');
+                barEl.className = 'b-bar';
+
+                const fillEl = document.createElement('div');
+                fillEl.className = 'b-fill';
+                fillEl.style.width = pct + '%';
+                barEl.appendChild(fillEl);
+
+                const pctEl = document.createElement('span');
+                pctEl.className = 'b-pct';
+                pctEl.textContent = pct + '%';
+
+                item.append(nameEl, barEl, pctEl);
                 breakdownList.appendChild(item);
             });
         }

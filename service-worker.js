@@ -37,13 +37,28 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch — cache-first for static assets, network-first for everything else
+// Fetch — network-first for documents, cache-first for other same-origin assets
 self.addEventListener('fetch', event => {
     const { request } = event;
     const url = new URL(request.url);
 
     // Only handle same-origin requests
     if (url.origin !== location.origin) return;
+
+    if (request.mode === 'navigate' || request.destination === 'document') {
+        event.respondWith(
+            fetch(request)
+                .then(response => {
+                    if (response && response.status === 200 && response.type === 'basic') {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+                    }
+                    return response;
+                })
+                .catch(() => caches.match(request).then(cached => cached || caches.match('/index.html')))
+        );
+        return;
+    }
 
     event.respondWith(
         caches.match(request).then(cached => {
